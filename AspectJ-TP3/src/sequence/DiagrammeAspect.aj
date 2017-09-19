@@ -48,68 +48,53 @@ public aspect DiagrammeAspect {
 	}
 
 	public String printNameClass(List<String> names) {
-		StringBuilder str = new StringBuilder(EMPTY_STRING);
+		String str = EMPTY_STRING;
 		if (names.isEmpty()) {
-			return str.toString();
+			return str;
 		}
 		String spacesBefore = duplicateCaracteres(SPACE, NB_SPACES / 2);
 		String spaces = duplicateCaracteres(spacesBefore.concat(PIPE).concat(spacesBefore), this.classes.size());
 		
-		StringBuilder entete = new StringBuilder(spaces);
-		StringBuilder trace = new StringBuilder(spaces);
+		String entete = spaces;
+		String trace = spaces;
 		
 		for (String n : names) {
-			entete.append(CLASSNAME_FRAMING_L);
-			entete.append(duplicateCaracteres(DASH, NB_SPACES - (CLASSNAME_FRAMING_L.length() + CLASSNAME_FRAMING_R.length())));
-			entete.append(CLASSNAME_FRAMING_R);
+			entete += CLASSNAME_FRAMING_L + duplicateCaracteres(DASH, NB_SPACES - (CLASSNAME_FRAMING_L.length() + CLASSNAME_FRAMING_R.length())) + CLASSNAME_FRAMING_R;
 		
 			int ecart = CLASSNAME_FRAGMENT_LEFT.length() + CLASSNAME_FRAGMENT_RIGHT.length();
 			int length = n.length() > (NB_SPACES - ecart) ? (NB_SPACES - ecart) : n.length();
 			this.classes.add(n);
 			String s = length == (NB_SPACES - ecart) ? EMPTY_STRING : duplicateCaracteres(SPACE, NB_SPACES - ecart - length);
 			n = (n.length() > (NB_SPACES - ecart)) ? n.substring(0, (NB_SPACES - ecart - 1)).concat(DOT) : n;
-			trace.append(CLASSNAME_FRAGMENT_LEFT);
-			trace.append(n);
-			trace.append(s);
-			trace.append(CLASSNAME_FRAGMENT_RIGHT);
+			trace += CLASSNAME_FRAGMENT_LEFT + n + s + CLASSNAME_FRAGMENT_RIGHT;
 		}
 		
-		str.append(entete);
-		str.append(NEXT_LINE);
-		str.append(trace);
-		str.append(NEXT_LINE);
-		str.append(entete);
-		return str.toString();
+		str += entete + NEXT_LINE + trace + NEXT_LINE + entete;
+		return str;
 	}
 
 	public String printAction(int idxSrc, int idxDest, String action) {
-		StringBuilder str = new StringBuilder(EMPTY_STRING);
-		StringBuilder spaces = new StringBuilder(duplicateCaracteres(SPACE, NB_SPACES / 2));
+		String str = EMPTY_STRING;
+		String spaces = duplicateCaracteres(SPACE, NB_SPACES / 2);
 		int idxStart = Math.min(idxSrc, idxDest);
 		int idxEnd = Math.max(idxSrc, idxDest);
 
 		for (int i = 0; i < idxStart; i++) {
-			spaces.append(PIPE);
-			spaces.append(duplicateCaracteres(SPACE, NB_SPACES));
+			spaces += PIPE + duplicateCaracteres(SPACE, NB_SPACES);
 		}
 		if (action != EMPTY_STRING) {
 			int length = action.length() > (NB_SPACES - 1) ? (NB_SPACES - 1) : action.length();
 			String s = (NB_SPACES - 1) - length == 0 ? EMPTY_STRING : duplicateCaracteres(SPACE, (NB_SPACES - 1) - length);
-			str.append(spaces);
-			str.append(PIPE);
-			str.append(SPACE);
-			str.append(action);
-			str.append(s);
-			str.append(PIPE);
+			str += spaces + PIPE + SPACE + action + s + PIPE;
 			for (int i = idxStart + 2; i < this.classes.size(); i++) {
-				str.append(duplicateCaracteres(SPACE, NB_SPACES));
+				str += duplicateCaracteres(SPACE, NB_SPACES);
 				if (i <= this.classes.size() - 1) {
-					str.append(PIPE);
+					str += PIPE;
 				}
 			}
-			str.append(NEXT_LINE);
+			str += NEXT_LINE;
 		}
-		str.append(spaces);
+		str += spaces;
 		// if (idxSrc == idxDest) {
 		// str += "--------";
 		// String end = "";
@@ -132,21 +117,19 @@ public aspect DiagrammeAspect {
 				tirets = duplicateCaracteres(DASH, NB_SPACES - 1).concat(RIGHT_ARROW);
 			}
 
-			str.append(PIPE);
-			str.append(tirets);
+			str += PIPE + tirets;
 			if (i == this.classes.size() - 2) {
-				str.append(PIPE);
+				str += PIPE;
 			}
 		}
 		for (int i = idxEnd; i < this.classes.size() - 1; i++) {
-			str.append(PIPE);
-			str.append(duplicateCaracteres(SPACE, NB_SPACES));
+			str += PIPE + duplicateCaracteres(SPACE, NB_SPACES);
 			if (i == this.classes.size() - 2) {
-				str.append(PIPE);
+				str += PIPE;
 			}
 		}
 		// }
-		return str.toString();
+		return str;
 	}
 
 	public String duplicateCaracteres(String str, int nb) {
