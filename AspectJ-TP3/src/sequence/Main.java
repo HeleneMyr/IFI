@@ -43,6 +43,7 @@ public class Main {
 		clients.delClient(c1);
 		System.out.println("supprime c3");
 		clients.delClient(c3);
+		orders.addOrder(o4);
 		
 		System.out.println("Supprime order appartenant c1");
 		orders.delOrder(o1);

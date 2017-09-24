@@ -13,6 +13,7 @@ public class Orders {
 	
 	public void addOrder(Order o) {
 		orders.add(o);
+		printOk();
 	}
 	
 	public void delOrder(Order o) {
@@ -22,5 +23,10 @@ public class Orders {
 			this.orders.remove(o);
 		}
 			
+	}
+	
+	public boolean printOk() {
+		System.out.println("ok");
+		return true;
 	}
 }
