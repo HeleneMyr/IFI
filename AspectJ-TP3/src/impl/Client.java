@@ -27,7 +27,6 @@ public class Client{
 
 
 	public void setAddress(String address) {
-		this.setName("test");
 		this.address = address;
 	}
 	

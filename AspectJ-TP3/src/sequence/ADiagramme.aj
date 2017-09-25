@@ -22,7 +22,7 @@ public aspect ADiagramme {
 
 	private List<String> classes = new ArrayList<>();
 
-	//declare precedence: orders.AClientOrder, singleton.ASingleton;
+	declare precedence: sequence.AClientOrder, singleton.ASingleton;
 
 	pointcut diagramme() : call(* impl..*.*(..));
 

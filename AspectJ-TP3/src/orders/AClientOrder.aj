@@ -1,4 +1,4 @@
-package sequence;
+package orders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,6 @@ public aspect AClientOrder {
 		if (o != null && this.orders.contains(o)) {
 			o.setClient(null);
 			this.orders.remove(o);
-			System.out.println(" supprime classe Client ");
 			o.printOrder();
 
 		}
@@ -49,14 +48,9 @@ public aspect AClientOrder {
 	
 	void around(Client c) : checkOrdersExist(c)
 	{
-		System.out.println("check exist");
-		
 		if (c != null && ! c.hasOrder()) {
-			System.out.println("pas order");
 			proceed(c);
-		} else {
-			System.out.println("a order");
-		}
+		} 
 	
 	}
 	
@@ -65,7 +59,6 @@ public aspect AClientOrder {
 	
 	after(Order o) : delClientOrder(o)
 	{
-		System.out.println("check order");
 		if (o.client != null) {
 			o.client.delOrder(o);
 		}

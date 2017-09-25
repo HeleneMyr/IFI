@@ -19,7 +19,6 @@ public class Orders {
 	public void delOrder(Order o) {
 		if (this.orders.contains(o) && o !=null) {
 			o.printOrder();
-			System.out.println( " supprim� -> class Orders");
 			this.orders.remove(o);
 		}
 			
