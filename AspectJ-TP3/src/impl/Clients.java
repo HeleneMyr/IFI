@@ -8,7 +8,7 @@ public class Clients {
 	protected List<Client> clients;
 	
 	public Clients() {
-		this.clients = new ArrayList<>();
+		initLstClients();
 	}
 	
 	public void addClient(Client c) {
@@ -20,5 +20,13 @@ public class Clients {
 			this.clients.remove(c);
 		}
 			
+	}
+	
+	public void initLstClients() {
+		this.clients = new ArrayList<>();
+	}
+	
+	public int getNbClients() {
+		return clients.size();
 	}
 }

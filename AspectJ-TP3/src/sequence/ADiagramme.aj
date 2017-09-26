@@ -34,7 +34,7 @@ public aspect ADiagramme {
 		if (!classes.contains(src)) {
 			className.add(src);
 		}
-		if (!classes.contains(dest)) {
+		if (!classes.contains(dest) && src!= null && !src.equalsIgnoreCase(dest)) {
 			className.add(dest);
 		}
 		if (!className.isEmpty())

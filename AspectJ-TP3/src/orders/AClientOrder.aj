@@ -37,8 +37,6 @@ public aspect AClientOrder {
 		if (o != null && this.orders.contains(o)) {
 			o.setClient(null);
 			this.orders.remove(o);
-			o.printOrder();
-
 		}
 
 	}
@@ -59,7 +57,7 @@ public aspect AClientOrder {
 	
 	after(Order o) : delClientOrder(o)
 	{
-		if (o.client != null) {
+		if (o != null && o.client != null) {
 			o.client.delOrder(o);
 		}
 	
