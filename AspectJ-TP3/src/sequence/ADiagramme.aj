@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Génération d'un diagramme de séquence sous forme ASCII
+ * 
+ * @author Helene MEYER
+ *
+ */
 public aspect ADiagramme {
 
 	private static final int NB_SPACES = 25;
@@ -20,12 +26,26 @@ public aspect ADiagramme {
 	private static final String PIPE = "|";
 	private static final String EMPTY_STRING = "";
 
+	/**
+	 * ensemble des classes présentes sur le diagramme
+	 */
 	private List<String> classes = new ArrayList<>();
 
-	declare precedence: sequence.AClientOrder, singleton.ASingleton;
+	/**
+	 * ordre de chargement des aspect 
+	 */
+	declare precedence: orders.AClientOrder, singleton.ASingleton;
 
+	/**
+	 * le diagramme utilise toutes les classes dans le package impl
+	 */
 	pointcut diagramme() : call(* impl..*.*(..));
 
+	/**
+	 * récupération des informations sur les appels et impressions de celles-ci 
+	 * 
+	 * @return le résultat du proceed
+	 */
 	Object around(): diagramme() {
 		List<String> className = new ArrayList<>();
 		String src = thisJoinPoint.getThis() != null ? thisJoinPoint.getThis().getClass().getSimpleName() : MAIN;
@@ -47,18 +67,24 @@ public aspect ADiagramme {
 		return ret;
 	}
 
+	/**
+	 * Imprime les noms des classes
+	 * 
+	 * @param names les nouveaux noms des classes à ajouter
+	 * @return les lignes d'impression des noms des classes
+	 */
 	public String printNameClass(List<String> names) {
 		if (names.isEmpty()) {
 			return EMPTY_STRING;
 		}
-		String spaces = calculateSpacesBetweenCall();
+		String spaces = calculateSpacesBeforeCall();
 		String entete = createFramingClassName(names.size(), spaces);
 		int gap = calculateFramingGap();
 		String trace = spaces;
 		
 		for (String n : names) {
 			this.classes.add(n);
-			String s = calculateSpacesBetweenNameClassAndPipe(gap, n);
+			String s = calculateSpacesAfterCall(gap, n);
 			n = cutClassName(gap, n);
 			trace += CLASSNAME_FRAGMENT_LEFT + n + s + CLASSNAME_FRAGMENT_RIGHT;
 		}
@@ -66,17 +92,36 @@ public aspect ADiagramme {
 		return entete + NEXT_LINE + trace + NEXT_LINE + entete;
 	}
 
+	/**
+	 * Coupe le nom de la classe
+	 * 
+	 * @param gap l'espace des rectangles autour du nom
+	 * @param n le nom de la classe
+	 * @return le nom coupé
+	 */
 	private String cutClassName(int gap, String n) {
 		return (n.length() >= (NB_SPACES - gap))
 				? n.substring(0, (NB_SPACES - gap) > n.length() ? n.length() - 1 : (NB_SPACES - gap)) : n;
 	}
 
-	private String calculateSpacesBetweenNameClassAndPipe(int gap, String n) {
+	/**
+	 * Retourne une chaine de caractere representant l'ensemble des lignes de vie des classes (après le traitement)
+	 * 
+	 * @param gap l'espace des rectangles autour du nom
+	 * @param n le nom de la classe
+	 * @return une chaîne de caractère contenant des espaces
+	 */
+	private String calculateSpacesAfterCall(int gap, String n) {
 		return n.length() >= (NB_SPACES - gap) ? EMPTY_STRING
 				: duplicateCaracteres(SPACE, NB_SPACES - gap - n.length());
 	}
 
-	private String calculateSpacesBetweenCall() {
+	/**
+	 * Retourne une chaine de caractere representant l'ensemble des lignes de vie des classes (avant le traitement)
+	 * 
+	 * @return une chaine de caractere representant l'ensemble des lignes de vie des classes (avant le traitement)
+	 */
+	private String calculateSpacesBeforeCall() {
 		String spacesAfter = duplicateCaracteres(SPACE, NB_SPACES / 2);
 		String spacesBefore = (NB_SPACES % 2 == 1) ? spacesAfter.concat(SPACE) : spacesAfter;
 
@@ -84,10 +129,22 @@ public aspect ADiagramme {
 		return spaces;
 	}
 
+	/**
+	 * Calcule le nombre de caractère que contient l'encadrement des noms de classes (à gauche et à droite)
+	 * 
+	 * @return le nombre de caractère que contient l'encadrement des noms de classe
+	 */
 	private int calculateFramingGap() {
 		return CLASSNAME_FRAGMENT_LEFT.length() + CLASSNAME_FRAGMENT_RIGHT.length();
 	}
 
+	/**
+	 * Créé l'encadrement des noms des classes
+	 * 
+	 * @param nb le nombre de classes à ajouter
+	 * @param spaces les espaces à placer avant les nouvelles classes
+	 * @return la chaîne de caractère représentant l'encadrement des noms des classes
+	 */
 	private String createFramingClassName(int nb, String spaces) {
 		return  spaces + duplicateCaracteres(CLASSNAME_FRAMING_L
 				+ duplicateCaracteres(DASH,
@@ -95,6 +152,15 @@ public aspect ADiagramme {
 				+ CLASSNAME_FRAMING_R, nb);
 	}
 
+	/**
+	 * Chaine de caractere representant l'action ou la réponse avec la flèche de direction
+	 * 
+	 * @param idxSrc l'indice de la classe appelante dans la liste des classes
+	 * @param idxDest l'indice de la classe appelee dans la liste des classes
+	 * @param action action ou réponse
+	 * @param ret vrai s'il s'agit d'une réponse a un appel sinon faux
+	 * @return une chaine de caractere representant l'action ou la réponse avec la flèche de direction
+	 */
 	public String printAction(int idxSrc, int idxDest, String action, boolean ret) {
 		String str = EMPTY_STRING;
 
@@ -115,6 +181,17 @@ public aspect ADiagramme {
 		return str;
 	}
 
+	/**
+	 * Creer la chaine de caractere représentant l'action ou la réponse
+	 * 
+	 * @param action l'action ou la réponse
+	 * @param spaces les espaces et lignes de vie des classes avant celle de l'appel
+	 * @param idxStart le premier indice de classe utilisée pour l'appel (source ou destination) : source si l'indice de la source est avant celui de la destination, sinon c'est l'indice de la destination
+	 * @param spacesBetween chaine de caractere contenant des espaces
+	 * @param isInternCall vrai s'il s'agit d'un appel à une même classe sinon faux
+	 * @param isReturn vrai s'il s'agit d'une réponse a un appel sinon faux
+	 * @return la chaine de caractere représentant l'action ou la réponse
+	 */
 	private String printActionName(String action, String spaces, int idxStart, String spacesBetween, boolean isInternCall, boolean isReturn) {
 		String str = EMPTY_STRING;
 		if (action != EMPTY_STRING) {
@@ -137,6 +214,16 @@ public aspect ADiagramme {
 		return str;
 	}
 
+	/**
+	 * Traitement des appels externes
+	 * 
+	 * @param idxSrc indice de la classe source dans la liste des classes
+	 * @param idxDest indice de la classe destination dans la liste des classes
+	 * @param idxStart indice minimal de la classe source ou de destination
+	 * @param idxEnd indice maximal de la classe source ou de destination
+	 * @param spacesBetween chaine de caractere contenant des espaces
+	 * @return une chaine de caractere qui traite les appels externes
+	 */
 	private String externCall(int idxSrc, int idxDest, int idxStart, int idxEnd, String spacesBetween) {
 		String str = EMPTY_STRING;
 		String arrow = duplicateCaracteres(DASH, NB_SPACES - 1);
@@ -156,10 +243,23 @@ public aspect ADiagramme {
 		return str + duplicateCaracteres(PIPE + spacesBetween, this.classes.size() - idxEnd);
 	}
 
+	/**
+	 * calcule le nombre d'espaces lorsqu'on divise par deux le nombre (nombre impair)
+	 * 
+	 * @return le nombre d'espace divisé par deux
+	 */
 	private int calculMiddleNbSpaces() {
 		return (NB_SPACES % 2 == 1) ? NB_SPACES / 2 + 1 : NB_SPACES / 2;
 	}
 
+	/**
+	 * Traitement des appels internes
+	 * 
+	 * @param ret vrai s'il s'agit d'une réponse sinon faux
+	 * @param idxEnd indice de la classe appelée
+	 * @param spaces les espaces et lignes de vie des classes avant celle de l'appel
+	 * @return une chaine de caractere qui traite les appels internes
+	 */
 	private String internCall(boolean ret, int idxEnd, String spaces) {
 		String end = EMPTY_STRING;
 		int tirets = calculMiddleNbSpaces() - 1;
@@ -169,7 +269,14 @@ public aspect ADiagramme {
 		return (!ret) ? PIPE + duplicateCaracteres(DASH, tirets + 1) + end + NEXT_LINE + spaces + PIPE + line + end : PIPE + LEFT_ARROW + duplicateCaracteres(DASH, tirets) + end;
 	}
 
+	/**
+	 * Dupliquer une chaine de caractère
+	 * 
+	 * @param str la chaine de caractere a dupliquer
+	 * @param nb le nombre de fois qu'il faut dupliquer la chaine de caractere
+	 * @return la duplication de la chaine de caractere
+	 */
 	public String duplicateCaracteres(String str, int nb) {
-		return String.join(EMPTY_STRING, Collections.nCopies(nb, str));
+		return nb <= 0 ? EMPTY_STRING : String.join(EMPTY_STRING, Collections.nCopies(nb, str));
 	}
 }

@@ -11,8 +11,7 @@ public class Main {
 	
 		Client c1 = new Client("Louis", "Lille");
 		Client c2 = new Client("Helene", "Sainghin-en-Melantois");
-		Client c3 = new Client("Alex", "Dans son appartement");
-		Client c4 = new Client("Maximou", "Hellemmes");
+		Client c3 = new Client("client", "ville");
 		
 		Order o1 = new Order(1, 42);
 		Order o2 = new Order(2, 45);
@@ -29,8 +28,6 @@ public class Main {
 		Clients clients = new Clients();
 		clients.addClient(c1);
 		clients.addClient(c2);
-		clients.addClient(c3);
-		clients.addClient(c4);
 		
 		Orders orders = new Orders();
 		orders.addOrder(o1);

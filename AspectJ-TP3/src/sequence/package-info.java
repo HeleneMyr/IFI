@@ -2,7 +2,9 @@
  * 
  */
 /**
- * @author Helene Meyer
+ * Affichage du diagramme
+ * 
+ * @author Helene MEYER
  *
  */
 package sequence;

@@ -11,6 +11,7 @@ public class SingletonTest {
 	@Test
 	public void test() {
 		Clients clients = new Clients();
+		clients.initLstClients();
 		clients.addClient(null);
 		
 		assertEquals(1, (new Clients().getNbClients()));
