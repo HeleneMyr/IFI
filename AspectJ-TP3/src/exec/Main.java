@@ -6,6 +6,12 @@ import impl.Clients;
 import impl.Order;
 import impl.Orders;
 
+/**
+ * Executable
+ * 
+ * @author Helene MEYER
+ *
+ */
 public class Main {
 	public static void main(String[] args) {
 	
